@@ -1,0 +1,20 @@
+AI USE - HW3 AirAsia Rewards Gift Card Management
+
+1. AI tool(s) used
+Claude (Anthropic), through Claude Code.
+
+2. Prompt(s) used
+- "Review the attached source code files for HW3 and begin initial testing and generate the test-report.md document"
+- "Run several tests on the attached source code files to ensure everything is connecting properly and the database is working"
+- "yes, update the test-report.md with the new testing"
+
+3. How AI supported my work
+AI read the HW3 source files, and ran several tests on the application and exercised each page to check the behavior. In a second round I asked it to test the database and connections more thoroughly, and it ran integrity, constraint, rebuild, link-crawl, CRUD, SQL injection, escaping, and boundary-value tests, which are summarized in the "Additional testing" section of test-report.md.
+
+4. One AI suggestion I tested, revised, or rejected
+AI validated Gift Card identifiers with a strict pattern (digits only, no leading zero) instead of PHP's intval(), because intval("1 OR 1=1") would quietly become 1 and intval("1.5") would become 1. I tested values such as abc, 0, -3, 1.5, "1 OR 1=1", an empty value, and 9999 on the details, update, and delete pages. The invalid ones were rejected with HTTP 400 and the nonexistent one returned 404. I kept this approach.
+
+5. How I verified the final code and database behavior
+I ran the site with PHP's built-in server and walked through every use case: list, details, add, update, and delete. I confirmed record counts changed as expected (20 to 21 on add, back to 20 on delete), that GET requests do not delete, and that invalid input is rejected and displayed escaped. I opened tests/validation-tests.php and confirmed all tests show PASS, then rebuilt rewards.db from schema.sql and seed.sql and confirmed it holds 5 ACCOUNT and 20 GIFTCARD rows. In the second round of testing, AI also confirmed that the database enforces its own constraints (it rejected 8 invalid inserts), that rebuilding from schema.sql and seed.sql reproduces the shipped data, that SQL injection attempts changed no data, and that special characters are displayed escaped. Its first injection test reported a failure; I had it recheck, and the cause was a flaw in the test itself (two of the requests were valid updates), not the application. After fixing the test, all checks passed. It also pointed out that the development server serves rewards.db directly, which I will address in HW4. Results are in test-report.md.
+
+
